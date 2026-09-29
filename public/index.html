@@ -158,7 +158,7 @@ const OWNERS=['Надежда','Команда Маркетинга','Ютубе
 let tasks=[],history=[],calDate=new Date();
 const $=id=>document.getElementById(id);
 function today(){let x=new Date();x.setHours(12,0,0,0);return x}
-function actor(){return localStorage.getItem('krasnov_actor')||'Настя'}
+function actor(){const v=localStorage.getItem('krasnov_actor')||'Настя';return {'Настя':'Nastya','Надежда':'Nadezhda','Игорь':'Igor','Команда Маркетинга':'Marketing','Ютуберы':'YouTube'}[v]||'user'}
 function saveActor(){localStorage.setItem('krasnov_actor',$('actorSelect').value)}
 function esc(s){return String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]))}
 function dateObj(s){return s?new Date(s+'T12:00:00'):null}
