@@ -118,6 +118,8 @@ async function initDb() {
   `);
 
   const count = Number((await pool.query("SELECT COUNT(*) AS n FROM marketing_tasks")).rows[0].n);
+  const recurringCount = Number((await pool.query("SELECT COUNT(*) AS n FROM marketing_tasks WHERE is_recurring=TRUE")).rows[0].n);
+  console.log("DB TASK SUMMARY", JSON.stringify({count, recurringCount, regularCount: count-recurringCount}));
   if (count === 0) {
     for (const t of seedTasks) {
       await pool.query(
@@ -125,6 +127,8 @@ async function initDb() {
         [t.id,t.section,t.title,JSON.stringify(t.owners),t.status,t.deadline,t.priority,t.note,t.is_recurring]
       );
     }
+    const afterSeed = Number((await pool.query("SELECT COUNT(*) AS n FROM marketing_tasks")).rows[0].n);
+    console.log("DB SEEDED TASK COUNT", afterSeed);
   }
 }
 
