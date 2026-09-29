@@ -18,12 +18,12 @@ main{padding:28px;max-width:1600px;width:100%;margin:0 auto}
 h1{font-size:28px;margin:0 0 6px}.desc{color:var(--muted);font-size:14px}.top{display:flex;justify-content:space-between;gap:16px;align-items:flex-start;margin-bottom:18px}.actions{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
 button{border:1px solid var(--line);background:var(--panel);color:var(--text);padding:9px 13px;border-radius:10px;cursor:pointer}button:hover{background:var(--panel2)}button.primary{background:var(--accent);color:#18140d;border-color:transparent;font-weight:700}button.danger{color:#ffb7bd;border-color:#66333a}
 .sync{font-size:12px;color:var(--muted);padding:8px 10px;border:1px solid var(--line);border-radius:999px}.sync.ok{color:#a6e4c1}.sync.bad{color:#ffb7bd}
-.grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:18px 0 22px}.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px}
+.grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px;margin:18px 0 22px}.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px}
 .klabel{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.7px}.kpi{font-size:30px;font-weight:800;margin-top:8px}
 .attention{display:grid;grid-template-columns:1.1fr .9fr;gap:12px;margin-bottom:20px}.attention .card{min-height:180px}
 .list-row{display:grid;grid-template-columns:1fr auto;gap:12px;padding:10px 0;border-bottom:1px solid var(--line)}.list-row:last-child{border-bottom:0}.list-row.clickable{cursor:pointer;border-radius:8px;padding-left:8px;padding-right:8px}.list-row.clickable:hover{background:var(--panel2)}
 .small{font-size:12px;color:var(--muted)}.task-title{font-weight:700;line-height:1.35}.badge{display:inline-flex;align-items:center;gap:5px;border-radius:999px;padding:5px 9px;font-size:12px;border:1px solid var(--line)}
-.over{background:#351b20;color:#ffb7bd;border-color:#6f3038}.soon{background:#332815;color:#ffd991;border-color:#70531c}.ok{background:#17291f;color:#a6e4c1;border-color:#2f6348}.none{background:#1a1d23;color:#aeb6c4}
+.over{background:#351b20;color:#ffb7bd;border-color:#6f3038}.soon{background:#332815;color:#ffd991;border-color:#70531c}.ok{background:#17291f;color:#a6e4c1;border-color:#2f6348}.none{background:#1a1d23;color:#aeb6c4}.missing{background:#3b2417;color:#ffd29a;border-color:#8a5124}.kpi-click{cursor:pointer;transition:.15s}.kpi-click:hover{border-color:#6a7280;transform:translateY(-1px)}
 .st-plan{background:#1b2230;color:#bdd0ff}.st-progress{background:#2b2417;color:#ffd98d}.st-wait{background:#241d2f;color:#dabdff}.st-review{background:#172b35;color:#a9dcf4}.st-done{background:#183026;color:#a9e8c7}
 .pr-critical{color:#ff9da5}.pr-high{color:#ffd991}
 .section{display:none}.section.active{display:block}
@@ -50,6 +50,7 @@ label{display:block;font-size:12px;color:var(--muted);margin-bottom:6px}textarea
   <div class="nav">
     <button class="active" data-tab="dashboard">Дашборд</button>
     <button data-tab="overdue">ПРОСРОЧЕНО <span id="navOver" class="count">0</span></button>
+    <button data-tab="nodeadline">БЕЗ ДЕДЛАЙНА <span id="navNoDeadline" class="count">0</span></button>
     <button data-tab="tasks">Все задачи</button>
     <button data-tab="board">Статусы</button>
     <button data-tab="processes">Постоянно <span id="navRecurring" class="count">0</span></button>
@@ -70,9 +71,10 @@ label{display:block;font-size:12px;color:var(--muted);margin-bottom:6px}textarea
   <div class="top"><div><h1>Маркетинг: контроль</h1><div class="desc">Сразу видно, что горит, что зависло и какие дедлайны впереди.</div></div><div class="actions"><span id="sync" class="sync">Подключение…</span><button onclick="loadAll()">Обновить</button><button class="primary" onclick="openModal()">+ Новая задача</button></div></div>
   <div class="grid">
     <div class="card"><div class="klabel">Активные задачи</div><div class="kpi" id="kActive">0</div></div>
-    <div class="card"><div class="klabel">Просрочено</div><div class="kpi" id="kOver">0</div></div>
+    <div class="card kpi-click" onclick="document.querySelector('[data-tab=overdue]').click()"><div class="klabel">Просрочено</div><div class="kpi" id="kOver">0</div></div>
     <div class="card"><div class="klabel">На 7 дней</div><div class="kpi" id="kWeek">0</div></div>
     <div class="card"><div class="klabel">Ждём</div><div class="kpi" id="kWait">0</div></div>
+    <div class="card kpi-click" onclick="document.querySelector('[data-tab=nodeadline]').click()"><div class="klabel">Без дедлайна</div><div class="kpi" id="kNoDeadline">0</div></div>
   </div>
   <div class="attention">
     <div class="card"><div class="klabel" style="margin-bottom:10px">Требует внимания</div><div id="attentionList"></div></div>
@@ -90,6 +92,11 @@ label{display:block;font-size:12px;color:var(--muted);margin-bottom:6px}textarea
 <section id="overdue" class="section">
   <div class="top"><div><h1>ПРОСРОЧЕНО</h1><div class="desc">Только активные задачи с прошедшим дедлайном.</div></div></div>
   <div id="overdueList"></div>
+</section>
+
+<section id="nodeadline" class="section">
+  <div class="top"><div><h1>БЕЗ ДЕДЛАЙНА</h1><div class="desc">Активные разовые задачи, у которых дата ещё не проставлена. Постоянные процессы сюда не попадают.</div></div></div>
+  <div id="noDeadlineList"></div>
 </section>
 
 <section id="tasks" class="section">
@@ -120,7 +127,7 @@ label{display:block;font-size:12px;color:var(--muted);margin-bottom:6px}textarea
 </section>
 
 <section id="calendar" class="section">
-  <div class="top"><div><h1>Календарь дедлайнов</h1><div class="desc">Все задачи с датой в одном месте.</div></div></div>
+  <div class="top"><div><h1>Календарь дедлайнов</h1><div class="desc">Все задачи с датой в одном месте. Задачи без даты вынесены отдельно.</div></div><button onclick="document.querySelector('[data-tab=nodeadline]').click()">Без дедлайна: <span id="calendarNoDeadlineCount">0</span></button></div>
   <div class="card">
     <div class="calendar-head"><button onclick="moveMonth(-1)">←</button><h2 id="monthTitle" style="margin:0;font-size:20px"></h2><button onclick="moveMonth(1)">→</button></div>
     <div class="calendar-grid" id="calendarGrid"></div>
@@ -146,7 +153,7 @@ label{display:block;font-size:12px;color:var(--muted);margin-bottom:6px}textarea
     <label class="owner-option"><input type="checkbox" value="Настя">Настя</label>
     <label class="owner-option"><input type="checkbox" value="Игорь">Игорь</label>
   </div></div>
-  <div><label>Статус</label><select id="fStatus"><option>Запланировано</option><option>В работе</option><option>Ждём</option><option>На проверке</option><option>Готово</option></select></div>
+  <div><label>Статус</label><select id="fStatus"><option>Запланировано</option><option>В работе</option><option>Ждём</option><option>Готово</option></select></div>
   <div><label>Дедлайн</label><input id="fDeadline" type="date"></div>
   <div><label>Приоритет</label><select id="fPriority"><option>Обычный</option><option>Высокий</option><option>Критичный</option></select></div>
   <div class="full"><label>Комментарий / зависимость</label><textarea id="fNote"></textarea></div>
@@ -172,7 +179,8 @@ function daysLeft(s){return Math.ceil((dateObj(s)-today())/86400000)}
 function normalizedStatus(t){return t.status==='На проверке'?'В работе':t.status}
 function isDone(t){return normalizedStatus(t)==='Готово'}
 function isOver(t){return !!t.deadline&&!isDone(t)&&daysLeft(t.deadline)<0}
-function dInfo(t){if(!t.deadline)return{txt:'Без дедлайна',cls:'none',rank:99999};let n=daysLeft(t.deadline),fmt=dateObj(t.deadline).toLocaleDateString('ru-RU');if(isDone(t))return{txt:fmt,cls:'ok',rank:n};if(n<0)return{txt:'Просрочено на '+Math.abs(n)+' дн. · '+fmt,cls:'over',rank:n};if(n<=7)return{txt:(n===0?'Сегодня':n+' дн.')+' · '+fmt,cls:'soon',rank:n};return{txt:fmt,cls:'ok',rank:n}}
+function isMissingDeadline(t){return !t.is_recurring&&!t.deadline&&!isDone(t)}
+function dInfo(t){if(!t.deadline)return{txt:'Без дедлайна',cls:(isMissingDeadline(t)?'missing':'none'),rank:(isMissingDeadline(t)?9000:99999)};let n=daysLeft(t.deadline),fmt=dateObj(t.deadline).toLocaleDateString('ru-RU');if(isDone(t))return{txt:fmt,cls:'ok',rank:n};if(n<0)return{txt:'Просрочено на '+Math.abs(n)+' дн. · '+fmt,cls:'over',rank:n};if(n<=7)return{txt:(n===0?'Сегодня':n+' дн.')+' · '+fmt,cls:'soon',rank:n};return{txt:fmt,cls:'ok',rank:n}}
 function sClass(s){return{'Запланировано':'st-plan','Не начато':'st-plan','В работе':'st-progress','Ждём':'st-wait','Готово':'st-done'}[s]||'st-plan'}
 function ownersText(t){return(t.owners&&t.owners.length?t.owners:['—']).join(' / ')}
 function pClass(p){return p==='Критичный'?'pr-critical':p==='Высокий'?'pr-high':''}
@@ -193,12 +201,23 @@ async function loadHistory(){try{history=await api('/api/history?limit=200');ren
 async function loadAll(){await Promise.all([loadTasks(),loadHistory()])}
 function recurring(){return tasks.filter(t=>t.is_recurring)}
 function normalTasks(){return tasks.filter(t=>!t.is_recurring)}
-function filtered(){let q=($('search')?.value||'').toLowerCase(),sec=$('filterSection')?.value||'',own=$('filterOwner')?.value||'',st=$('filterStatus')?.value||'',fd=$('filterDeadline')?.value||'';return normalTasks().filter(t=>{if(q&&!(t.title+' '+t.note+' '+t.section+' '+ownersText(t)).toLowerCase().includes(q))return false;if(sec&&t.section!==sec)return false;if(own&&!(t.owners||[]).includes(own))return false;if(st&&normalizedStatus(t)!==st)return false;if(fd==='over'&&!isOver(t))return false;if(fd==='7'&&!(t.deadline&&daysLeft(t.deadline)>=0&&daysLeft(t.deadline)<=7))return false;if(fd==='30'&&!(t.deadline&&daysLeft(t.deadline)>=0&&daysLeft(t.deadline)<=30))return false;if(fd==='none'&&t.deadline)return false;return true})}
+function filtered(){let q=($('search')?.value||'').toLowerCase(),sec=$('filterSection')?.value||'',own=$('filterOwner')?.value||'',st=$('filterStatus')?.value||'',fd=$('filterDeadline')?.value||'';return normalTasks().filter(t=>{if(q&&!(t.title+' '+t.note+' '+t.section+' '+ownersText(t)).toLowerCase().includes(q))return false;if(sec&&t.section!==sec)return false;if(own&&!(t.owners||[]).includes(own))return false;if(st&&normalizedStatus(t)!==st)return false;if(fd==='over'&&!isOver(t))return false;if(fd==='7'&&!(t.deadline&&daysLeft(t.deadline)>=0&&daysLeft(t.deadline)<=7))return false;if(fd==='30'&&!(t.deadline&&daysLeft(t.deadline)>=0&&daysLeft(t.deadline)<=30))return false;if(fd==='none'&&!isMissingDeadline(t))return false;return true})}
 function filters(){let secs=[...new Set(normalTasks().map(t=>t.section))].sort(),fs=$('filterSection'),fo=$('filterOwner'),sv=fs.value,ov=fo.value;fs.innerHTML='<option value="">Все направления</option>'+secs.map(x=>'<option>'+esc(x)+'</option>').join('');fo.innerHTML='<option value="">Все исполнители</option>'+OWNERS.map(x=>'<option>'+x+'</option>').join('');fs.value=sv;fo.value=ov}
 function taskRow(t){let d=dInfo(t);return '<tr><td><div class="task-title">'+esc(t.title)+'</div><div class="small '+pClass(t.priority)+'">'+esc(t.priority)+' приоритет</div></td><td>'+esc(t.section)+'</td><td>'+esc(ownersText(t))+'</td><td><span class="badge '+sClass(t.status)+'">'+esc(normalizedStatus(t))+'</span></td><td><span class="badge '+d.cls+'">'+d.txt+'</span></td><td class="small">'+esc(t.note||'')+'</td><td><button onclick="openModal('+t.id+')">Изм.</button></td></tr>'}
 function renderRows(){$('taskRows').innerHTML=filtered().sort((a,b)=>dInfo(a).rank-dInfo(b).rank).map(taskRow).join('')}
-function renderKPIs(){let a=normalTasks().filter(t=>!isDone(t)),over=a.filter(isOver),week=a.filter(t=>t.deadline&&daysLeft(t.deadline)>=0&&daysLeft(t.deadline)<=7);$('kActive').textContent=a.length;$('kOver').textContent=over.length;$('kWeek').textContent=week.length;$('kWait').textContent=a.filter(t=>t.status==='Ждём').length;$('navOver').textContent=over.length;$('navRecurring').textContent=recurring().length}
-function attention(){let arr=normalTasks().filter(t=>!isDone(t)).sort((a,b)=>{let score=x=>(isOver(x)?-10000:0)+(x.priority==='Критичный'?-1000:x.priority==='Высокий'?-300:0)+(x.status==='Ждём'?-150:0)+(x.deadline?daysLeft(x.deadline):500);return score(a)-score(b)}).slice(0,7);$('attentionList').innerHTML=arr.length?arr.map(t=>{let d=dInfo(t);return '<div class="list-row clickable" onclick="openModal(\''+t.id+'\')"><div><div class="task-title">'+esc(t.title)+'</div><div class="small">'+esc(ownersText(t))+' · '+esc(t.status)+'</div></div><span class="badge '+d.cls+'">'+d.txt+'</span></div>'}).join(''):'<div class="empty">Нет активных задач.</div>';let up=normalTasks().filter(t=>t.deadline&&!isDone(t)&&daysLeft(t.deadline)>=0).sort((a,b)=>daysLeft(a.deadline)-daysLeft(b.deadline)).slice(0,7);$('upcoming').innerHTML=up.length?up.map(t=>{let d=dInfo(t);return '<div class="list-row clickable" onclick="openModal(\''+t.id+'\')"><div><div class="task-title">'+esc(t.title)+'</div><div class="small">'+esc(t.section)+'</div></div><span class="badge '+d.cls+'">'+d.txt+'</span></div>'}).join(''):'<div class="empty">Нет ближайших дедлайнов.</div>'}
+function renderKPIs(){let a=normalTasks().filter(t=>!isDone(t)),over=a.filter(isOver),week=a.filter(t=>t.deadline&&daysLeft(t.deadline)>=0&&daysLeft(t.deadline)<=7);$('kActive').textContent=a.length;$('kOver').textContent=over.length;$('kWeek').textContent=week.length;$('kWait').textContent=a.filter(t=>normalizedStatus(t)==='Ждём').length;let missing=a.filter(isMissingDeadline);$('kNoDeadline').textContent=missing.length;$('navOver').textContent=over.length;$('navNoDeadline').textContent=missing.length;$('calendarNoDeadlineCount').textContent=missing.length;$('navRecurring').textContent=recurring().length}
+function attention(){let arr=normalTasks().filter(t=>!isDone(t)).sort((a,b)=>{let score=x=>(isOver(x)?-10000:0)+(x.priority==='Критичный'?-1000:x.priority==='Высокий'?-300:0)+(normalizedStatus(x)==='Ждём'?-150:0)+(isMissingDeadline(x)?-700:(x.deadline?daysLeft(x.deadline):500));return score(a)-score(b)}).slice(0,7);$('attentionList').innerHTML=arr.length?arr.map(t=>{let d=dInfo(t);return '<div class="list-row clickable" onclick="openModal(\''+t.id+'\')"><div><div class="task-title">'+esc(t.title)+'</div><div class="small">'+esc(ownersText(t))+' · '+esc(t.status)+'</div></div><span class="badge '+d.cls+'">'+d.txt+'</span></div>'}).join(''):'<div class="empty">Нет активных задач.</div>';let up=normalTasks().filter(t=>t.deadline&&!isDone(t)&&daysLeft(t.deadline)>=0).sort((a,b)=>daysLeft(a.deadline)-daysLeft(b.deadline)).slice(0,7);$('upcoming').innerHTML=up.length?up.map(t=>{let d=dInfo(t);return '<div class="list-row clickable" onclick="openModal(\''+t.id+'\')"><div><div class="task-title">'+esc(t.title)+'</div><div class="small">'+esc(t.section)+'</div></div><span class="badge '+d.cls+'">'+d.txt+'</span></div>'}).join(''):'<div class="empty">Нет ближайших дедлайнов.</div>'}
+function renderNoDeadline(){
+  let arr=normalTasks().filter(isMissingDeadline).sort((a,b)=>{
+    const pa=x=>x.priority==='Критичный'?0:x.priority==='Высокий'?1:2;
+    return pa(a)-pa(b);
+  });
+  $('noDeadlineList').innerHTML=arr.length?
+    '<div style="overflow:auto"><table><thead><tr><th>Задача</th><th>Направление</th><th>Ответственные</th><th>Статус</th><th>Приоритет</th><th></th></tr></thead><tbody>'+
+    arr.map(t=>'<tr><td><div class="task-title">'+esc(t.title)+'</div><div class="small">'+esc(t.note||'')+'</div></td><td>'+esc(t.section)+'</td><td>'+esc(ownersText(t))+'</td><td><span class="badge '+sClass(normalizedStatus(t))+'">'+esc(normalizedStatus(t))+'</span></td><td><span class="badge missing">'+esc(t.priority)+'</span></td><td><button onclick="openModal(\''+t.id+'\')">Поставить дедлайн</button></td></tr>').join('')+
+    '</tbody></table></div>':
+    '<div class="card"><div class="empty">У всех активных разовых задач проставлен дедлайн ✓</div></div>';
+}
 function renderOverdue(){let arr=normalTasks().filter(isOver).sort((a,b)=>daysLeft(a.deadline)-daysLeft(b.deadline));$('overdueList').innerHTML=arr.length?'<div style="overflow:auto"><table><thead><tr><th>Задача</th><th>Ответственные</th><th>Статус</th><th>Дедлайн</th><th></th></tr></thead><tbody>'+arr.map(t=>{let d=dInfo(t);return '<tr><td><div class="task-title">'+esc(t.title)+'</div><div class="small">'+esc(t.section)+'</div></td><td>'+esc(ownersText(t))+'</td><td><span class="badge '+sClass(t.status)+'">'+esc(t.status)+'</span></td><td><span class="badge over">'+d.txt+'</span></td><td><button onclick="openModal('+t.id+')">Открыть</button></td></tr>'}).join('')+'</tbody></table></div>':'<div class="card"><div class="empty">Просроченных задач нет 🎉</div></div>'}
 function renderBoard(){let m={'Запланировано':'col-plan','Не начато':'col-plan','В работе':'col-progress','Ждём':'col-wait','Готово':'col-done'};Object.values(m).forEach(id=>$(id).innerHTML='');normalTasks().forEach(t=>{let d=dInfo(t),el=$(m[t.status]||'col-plan');el.insertAdjacentHTML('beforeend','<div class="task-card" onclick="openModal('+t.id+')"><div class="task-title">'+esc(t.title)+'</div><div class="meta"><span class="badge '+d.cls+'">'+d.txt+'</span><span class="badge">'+esc(t.priority)+'</span></div><div class="small" style="margin-top:8px">'+esc(ownersText(t))+'</div></div>')})}
 function renderProcesses(){let arr=recurring();$('processGrid').innerHTML=arr.length?arr.map(t=>'<div class="process-card"><div class="process-icon">↻</div><div class="task-title">'+esc(t.title)+'</div><div class="small" style="margin:8px 0">'+esc(t.section)+' · '+esc(ownersText(t))+'</div><div class="meta"><span class="badge '+sClass(t.status)+'">'+esc(t.status)+'</span><span class="badge">'+esc(t.priority)+'</span></div><div class="small" style="margin-top:10px">'+esc(t.note||'')+'</div><div style="margin-top:12px"><button onclick="openModal('+t.id+')">Изменить</button></div></div>').join(''):'<div class="empty">Постоянных процессов пока нет.</div>'}
@@ -223,6 +242,7 @@ function renderAll(){
     ['kpis',renderKPIs],
     ['attention',attention],
     ['overdue',renderOverdue],
+    ['noDeadline',renderNoDeadline],
     ['board',renderBoard],
     ['processes',renderProcesses],
     ['dashboardProcesses',renderDashboardProcesses],
