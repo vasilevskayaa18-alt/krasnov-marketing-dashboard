@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>KRASNOV — Маркетинг: задачи и дедлайны</title>
+<style>
+:root{--bg:#0f1115;--panel:#171a21;--panel2:#1e222b;--line:#2b303b;--text:#f3f4f6;--muted:#9aa3b2;--accent:#d8b36b;--ok:#59c88d;--warn:#f2b84b;--bad:#ef6b73}*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:var(--bg);color:var(--text)}.app{display:grid;grid-template-columns:230px 1fr;min-height:100vh}aside{background:#0b0d11;border-right:1px solid var(--line);padding:24px 18px}.brand{font-size:19px;font-weight:700;letter-spacing:1px}.sub{font-size:12px;color:var(--muted);margin:6px 0 25px}.nav button{width:100%;text-align:left;border:0;background:transparent;color:var(--muted);padding:11px 12px;border-radius:10px;margin:3px 0;cursor:pointer}.nav button.active,.nav button:hover{background:var(--panel);color:var(--text)}main{padding:28px;max-width:1500px;width:100%}h1{font-size:28px;margin:0 0 6px}.desc{color:var(--muted);font-size:14px}.top{display:flex;justify-content:space-between;gap:16px;align-items:flex-start;margin-bottom:20px}.actions{display:flex;gap:8px;flex-wrap:wrap}button{border:1px solid var(--line);background:var(--panel);color:var(--text);padding:10px 14px;border-radius:10px;cursor:pointer}button.primary{background:var(--accent);color:#18140d;border-color:transparent;font-weight:700}.grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:18px 0 22px}.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px}.klabel{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.7px}.kpi{font-size:30px;font-weight:800;margin-top:8px}.note{background:#121820;border:1px solid #2b3b50;color:#cfe0f8;border-radius:12px;padding:12px;margin-bottom:18px;font-size:13px}.toolbar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}input,select,textarea{background:#11141a;color:var(--text);border:1px solid var(--line);border-radius:9px;padding:9px 10px}input[type=text]{min-width:220px}table{width:100%;border-collapse:collapse;background:var(--panel);border:1px solid var(--line)}th,td{padding:12px 10px;border-bottom:1px solid var(--line);vertical-align:top}th{text-align:left;font-size:12px;color:var(--muted);text-transform:uppercase;background:#14171d}td{font-size:14px}.small{font-size:12px;color:var(--muted)}.task-title{font-weight:700;line-height:1.35}.badge{display:inline-flex;border-radius:999px;padding:5px 9px;font-size:12px;border:1px solid var(--line)}.over{background:#351b20;color:#ffb7bd;border-color:#6f3038}.soon{background:#332815;color:#ffd991;border-color:#70531c}.ok{background:#17291f;color:#a6e4c1;border-color:#2f6348}.none{background:#1a1d23;color:#aeb6c4}.st-new{background:#1b2230;color:#bcd0ff}.st-progress{background:#2b2417;color:#ffd98d}.st-wait{background:#241d2f;color:#dabdff}.st-done{background:#183026;color:#a9e8c7}.section{display:none}.section.active{display:block}.board{display:grid;grid-template-columns:repeat(4,minmax(220px,1fr));gap:12px}.col{background:#11141a;border:1px solid var(--line);border-radius:14px;padding:12px;min-height:300px}.col h3{margin:0 0 12px;font-size:14px}.task-card{background:var(--panel2);border:1px solid var(--line);border-radius:12px;padding:12px;margin-bottom:10px;cursor:pointer}.meta{display:flex;gap:7px;flex-wrap:wrap;margin-top:9px}dialog{border:1px solid var(--line);border-radius:16px;background:#11141a;color:var(--text);width:min(720px,92vw);padding:0}dialog::backdrop{background:rgba(0,0,0,.65)}.modal{padding:20px}.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.full{grid-column:1/-1}label{display:block;font-size:12px;color:var(--muted);margin-bottom:6px}textarea{min-height:90px;resize:vertical;width:100%}input,select{width:100%}
+.owner-picker{display:grid;grid-template-columns:1fr 1fr;gap:8px;background:#11141a;border:1px solid var(--line);border-radius:9px;padding:10px}
+.owner-option{display:flex;align-items:center;gap:8px;padding:7px 8px;border-radius:8px;background:#171a21;cursor:pointer;font-size:13px;color:var(--text)}
+.owner-option:hover{background:#1e222b}
+.owner-option input{width:auto;margin:0;accent-color:var(--accent)}
+.owner-list{display:flex;gap:5px;flex-wrap:wrap}
+@media(max-width:520px){.owner-picker{grid-template-columns:1fr}}@media(max-width:900px){.app{grid-template-columns:1fr}aside{display:none}.grid,.board{grid-template-columns:1fr 1fr}}@media(max-width:620px){main{padding:18px}.grid,.board,.form-grid{grid-template-columns:1fr}.top{flex-direction:column}}
+</style>
+</head>
+<body><div class="app"><aside><div class="brand">KRASNOV</div><div class="sub">Маркетинг · контроль задач</div><div class="nav"><button class="active" data-tab="dashboard">Дашборд</button><button data-tab="tasks">Все задачи</button><button data-tab="board">Канбан</button><button data-tab="settings">Настройки</button></div></aside><main>
+<section id="dashboard" class="section active"><div class="top"><div><h1>Маркетинг: задачи и дедлайны</h1><div class="desc">Сразу видно, что просрочено, что горит и кто отвечает.</div></div><div class="actions"><button onclick="exportJSON()">Экспорт</button><button class="primary" onclick="openModal()">+ Новая задача</button></div></div><div class="grid"><div class="card"><div class="klabel">Всего задач</div><div class="kpi" id="kTotal">0</div></div><div class="card"><div class="klabel">Просрочено</div><div class="kpi" id="kOver">0</div></div><div class="card"><div class="klabel">На 7 дней</div><div class="kpi" id="kWeek">0</div></div><div class="card"><div class="klabel">В работе</div><div class="kpi" id="kProgress">0</div></div></div><div class="card"><div class="klabel" style="margin-bottom:12px">Ближайшие дедлайны</div><div id="upcoming"></div></div></section>
+<section id="tasks" class="section"><div class="top"><div><h1>Все задачи</h1><div class="desc">Фильтры по направлению, исполнителю, статусу и дедлайну.</div></div><div class="actions"><button class="primary" onclick="openModal()">+ Новая задача</button></div></div><div class="toolbar"><input id="search" type="text" placeholder="Поиск…" oninput="renderAll()"><select id="filterSection" onchange="renderAll()"><option value="">Все направления</option></select><select id="filterOwner" onchange="renderAll()"><option value="">Все исполнители</option></select><select id="filterStatus" onchange="renderAll()"><option value="">Все статусы</option><option>Не начато</option><option>В работе</option><option>Ждём</option><option>Готово</option></select><select id="filterDeadline" onchange="renderAll()"><option value="">Все дедлайны</option><option value="over">Просрочено</option><option value="7">7 дней</option><option value="30">30 дней</option><option value="none">Без дедлайна</option></select></div><div style="overflow:auto"><table><thead><tr><th>Задача</th><th>Направление</th><th>Ответственный</th><th>Статус</th><th>Дедлайн</th><th>Комментарий</th><th></th></tr></thead><tbody id="taskRows"></tbody></table></div></section>
+<section id="board" class="section"><div class="top"><div><h1>Канбан</h1><div class="desc">Быстрый обзор по статусам.</div></div><button class="primary" onclick="openModal()">+ Новая задача</button></div><div class="board"><div class="col"><h3>Не начато</h3><div id="col-new"></div></div><div class="col"><h3>В работе</h3><div id="col-progress"></div></div><div class="col"><h3>Ждём</h3><div id="col-wait"></div></div><div class="col"><h3>Готово</h3><div id="col-done"></div></div></div></section>
+<section id="settings" class="section"><div class="top"><div><h1>Настройки</h1><div class="desc">Личная версия руководителя.</div></div></div><div class="card"><p><b>Как пользоваться:</b> добавляй задачи, ставь ответственного, статус и дедлайн. Просрочка подсвечивается автоматически.</p><p class="small">Данные сохраняются в браузере этого устройства. Для общей командной версии нужен следующий этап — общая база данных, авторизация и доступы.</p><button onclick="resetSeed()">Сбросить к исходным задачам</button></div></section>
+</main></div>
+<dialog id="taskDialog"><form method="dialog" class="modal" onsubmit="saveTask(event)"><div class="top" style="margin-bottom:12px"><h1 id="modalTitle" style="font-size:22px">Новая задача</h1><button value="cancel">Закрыть</button></div><input type="hidden" id="editId"><div class="form-grid"><div class="full"><label>Задача</label><textarea id="fTitle" required></textarea></div><div><label>Направление</label><input id="fSection" required></div><div><label>Ответственные · можно выбрать несколько</label>
+<div class="owner-picker" id="fOwners">
+<label class="owner-option"><input type="checkbox" name="owners" value="Надежда">Надежда</label>
+<label class="owner-option"><input type="checkbox" name="owners" value="Команда Маркетинга">Команда Маркетинга</label>
+<label class="owner-option"><input type="checkbox" name="owners" value="Ютуберы">Ютуберы</label>
+<label class="owner-option"><input type="checkbox" name="owners" value="Настя">Настя</label>
+<label class="owner-option"><input type="checkbox" name="owners" value="Игорь">Игорь</label>
+</div></div><div><label>Статус</label><select id="fStatus"><option>Не начато</option><option>В работе</option><option>Ждём</option><option>Готово</option></select></div><div><label>Дедлайн</label><input id="fDeadline" type="date"></div><div><label>Приоритет</label><select id="fPriority"><option>Обычный</option><option>Высокий</option><option>Критичный</option></select></div><div class="full"><label>Комментарий / зависимость</label><textarea id="fNote"></textarea></div></div><div class="actions" style="justify-content:flex-end;margin-top:16px"><button value="cancel">Отмена</button><button class="primary" value="default">Сохранить</button></div></form></dialog>
+<script>
+const TODAY=new Date();TODAY.setHours(12,0,0,0);
+const seed=[
+{id:1,section:'Instagram',title:'Проводить философию KRASNOV красной нитью через весь контент; выделить дополнительные тезисы и раскрывать их в публикациях.',owner:'Маркетинг',status:'В работе',deadline:'',priority:'Высокий',note:'Постоянная задача — лучше контролировать еженедельно.'},
+{id:2,section:'Instagram',title:'Создать актуальное с процессом реализации проекта от начала до конца: задача/боль клиента → решения → ход работ → результат.',owner:'Надежда / команда маркетинга',status:'В работе',deadline:'2026-10-20',priority:'Высокий',note:'Дедлайн из сообщения Надежды от 23.09.'},
+{id:3,section:'Instagram',title:'Сделать отдельное актуальное о философии KRASNOV на 2–3 слайда.',owner:'Маркетинг',status:'Не начато',deadline:'',priority:'Обычный',note:'Дедлайн не указан.'},
+{id:4,section:'Instagram',title:'Собрать тестовый Reels из подсъёмов реального ремонта, чтобы показывать процесс реализации.',owner:'Маркетинг',status:'В работе',deadline:'2026-10-04',priority:'Высокий',note:'«До конца следующей недели» из сообщения 23.09.'},
+{id:5,section:'Instagram',title:'Публиковать посты с дизайн-проектами студии, чтобы показывать товар лицом.',owner:'Маркетинг',status:'В работе',deadline:'',priority:'Обычный',note:'Регулярная задача — лучше вынести в контент-план.'},
+{id:6,section:'CTA и точки касания',title:'Заменить CTA на одностраничниках: презентации проектов, «30 минут с дизайнером KRASNOV», гайд «10 ошибок в ремонте», бриф «50 вопросов перед ремонтом».',owner:'Маркетинг',status:'Не начато',deadline:'2026-09-27',priority:'Критичный',note:'Дедлайн «до конца этой недели» из сообщения 23.09. На 28.09 уже просрочено.'},
+{id:7,section:'CTA и точки касания',title:'Использовать согласованные заходы и дисклеймеры во всём контенте и точках касания.',owner:'Маркетинг',status:'В работе',deadline:'',priority:'Высокий',note:'Постоянный стандарт.'},
+{id:8,section:'CTA и точки касания',title:'Соблюдать схему CTA: конкретный заход → если планируете работу с нами → приглашение обсудить объект → дисклеймер.',owner:'Маркетинг',status:'В работе',deadline:'',priority:'Высокий',note:'Постоянный стандарт.'},
+{id:9,section:'CTA и точки касания',title:'Объяснять содержание первой встречи: объект, задачи, сроки, бюджет, формат работы; при необходимости планировка, референсы, бриф.',owner:'Маркетинг / продажи',status:'Не начато',deadline:'',priority:'Высокий',note:'Нужно закрепить единый текст для всех точек касания.'},
+{id:10,section:'CTA и точки касания',title:'Обозначать границы первой встречи: без разбора отдельных комнат, точечных вопросов по готовому интерьеру, подбора мебели и отдельных решений.',owner:'Маркетинг / продажи',status:'Не начато',deadline:'',priority:'Высокий',note:'Нужно закрепить единый дисклеймер.'},
+{id:11,section:'CTA и точки касания',title:'Убрать призыв «Бесплатная консультация» из описаний к видео, постов и лендингов; не вести на отдельную страницу бесплатной консультации.',owner:'Маркетинг',status:'В работе',deadline:'2026-10-20',priority:'Критичный',note:'Дедлайн из сообщения Надежды от 23.09.'},
+{id:12,section:'Лид-магниты',title:'Собрать и отобрать реальные рабочие документы студии, полезные потенциальным заказчикам.',owner:'Настя + команда',status:'Ждём',deadline:'',priority:'Высокий',note:'Сначала студия предоставляет документы.'},
+{id:13,section:'Лид-магниты',title:'Подготовить отдельный лендинг под каждый выбранный рабочий документ.',owner:'Надежда + Малена',status:'Ждём',deadline:'',priority:'Высокий',note:'Срок — в течение недели после предоставления материалов.'},
+{id:14,section:'Мини-продукт',title:'Внедрить мини-продукт «Планировочные решения (трипваер)».',owner:'Маркетинг',status:'Ждём',deadline:'',priority:'Высокий',note:'23.09 Надежда обещала прислать полное описание и тексты для анонса в ТГ.'},
+{id:15,section:'Персонализированные сторис',title:'Показать примеры персонализированных сторис, которые делали в ВВ.',owner:'Маркетинг',status:'Не начато',deadline:'',priority:'Обычный',note:'Дедлайн не указан.'},
+{id:16,section:'Персонализированные сторис',title:'Адаптировать формат для KRASNOV: запрос клиента + образ жизни + состав семьи → решения проекта → переход к подробностям.',owner:'Маркетинг',status:'Не начато',deadline:'',priority:'Высокий',note:'После примеров из ВВ.'}
+];
+const ALLOWED_OWNERS=['Надежда','Команда Маркетинга','Ютуберы','Настя','Игорь'];
+function normalizeOwners(t){
+  if(Array.isArray(t.owners)) return [...new Set(t.owners.filter(x=>ALLOWED_OWNERS.includes(x)))];
+  const raw=(t.owner||'').toLowerCase(), out=[];
+  if(raw.includes('надеж'))out.push('Надежда');
+  if(raw.includes('маркет')||raw.includes('команда'))out.push('Команда Маркетинга');
+  if(raw.includes('ютуб'))out.push('Ютуберы');
+  if(raw.includes('наст'))out.push('Настя');
+  if(raw.includes('игор'))out.push('Игорь');
+  return [...new Set(out)];
+}
+function normalizeTask(t){return {...t,owners:normalizeOwners(t)}}
+let tasks=(JSON.parse(localStorage.getItem('krasnov_marketing_tasks')||'null')||seed).map(normalizeTask);
+function persist(){localStorage.setItem('krasnov_marketing_tasks',JSON.stringify(tasks))}
+function ownersText(t){return (t.owners&&t.owners.length?t.owners:['—']).join(' / ')}
+function ownersHtml(t){return (t.owners&&t.owners.length?t.owners:['—']).map(x=>`<span class="badge">${esc(x)}</span>`).join(' ')}
+function d(s){return s?new Date(s+'T12:00:00'):null}
+function diff(x){return Math.ceil((x-TODAY)/86400000)}
+function di(t){if(!t.deadline)return{txt:'Без дедлайна',cls:'none',rank:99999};let x=d(t.deadline),n=diff(x),fmt=x.toLocaleDateString('ru-RU');if(t.status==='Готово')return{txt:fmt,cls:'ok',rank:n};if(n<0)return{txt:`Просрочено на ${Math.abs(n)} дн. · ${fmt}`,cls:'over',rank:n};if(n<=7)return{txt:`${n===0?'Сегодня':n+' дн.'} · ${fmt}`,cls:'soon',rank:n};return{txt:fmt,cls:'ok',rank:n}}
+function sc(s){return{'Не начато':'st-new','В работе':'st-progress','Ждём':'st-wait','Готово':'st-done'}[s]||'st-new'}
+function esc(s){return(s||'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]))}
+function filters(){
+  let secs=[...new Set(tasks.map(t=>t.section))].sort(),fs=document.getElementById('filterSection'),fo=document.getElementById('filterOwner'),sv=fs.value,ov=fo.value;
+  fs.innerHTML='<option value="">Все направления</option>'+secs.map(x=>`<option>${x}</option>`).join('');
+  fo.innerHTML='<option value="">Все исполнители</option>'+ALLOWED_OWNERS.map(x=>`<option>${x}</option>`).join('');
+  fs.value=sv;fo.value=ov
+}
+function ft(){
+  let q=(document.getElementById('search')?.value||'').toLowerCase(),sec=document.getElementById('filterSection')?.value||'',own=document.getElementById('filterOwner')?.value||'',st=document.getElementById('filterStatus')?.value||'',fd=document.getElementById('filterDeadline')?.value||'';
+  return tasks.filter(t=>{
+    if(q&&!(t.title+' '+t.note+' '+t.section+' '+ownersText(t)).toLowerCase().includes(q))return false;
+    if(sec&&t.section!==sec)return false;
+    if(own&&!(t.owners||[]).includes(own))return false;
+    if(st&&t.status!==st)return false;
+    let x=di(t);
+    if(fd==='over'&&!(t.deadline&&x.rank<0&&t.status!=='Готово'))return false;
+    if(fd==='7'&&!(t.deadline&&x.rank>=0&&x.rank<=7))return false;
+    if(fd==='30'&&!(t.deadline&&x.rank>=0&&x.rank<=30))return false;
+    if(fd==='none'&&t.deadline)return false;
+    return true
+  })
+}
+function rows(){document.getElementById('taskRows').innerHTML=ft().sort((a,b)=>di(a).rank-di(b).rank).map(t=>{let x=di(t);return`<tr><td><div class="task-title">${esc(t.title)}</div><div class="small">${esc(t.priority)} приоритет</div></td><td>${esc(t.section)}</td><td><div class="owner-list">${ownersHtml(t)}</div></td><td><span class="badge ${sc(t.status)}">${t.status}</span></td><td><span class="badge ${x.cls}">${x.txt}</span></td><td class="small">${esc(t.note||'')}</td><td><button onclick="openModal(${t.id})">Изм.</button></td></tr>`}).join('')}
+function kpis(){let a=tasks.filter(t=>t.status!=='Готово');kTotal.textContent=tasks.length;kOver.textContent=a.filter(t=>t.deadline&&di(t).rank<0).length;kWeek.textContent=a.filter(t=>t.deadline&&di(t).rank>=0&&di(t).rank<=7).length;kProgress.textContent=tasks.filter(t=>t.status==='В работе').length;let up=a.filter(t=>t.deadline).sort((a,b)=>di(a).rank-di(b).rank).slice(0,8);upcoming.innerHTML=up.map(t=>{let x=di(t);return`<div style="display:grid;grid-template-columns:1fr auto;gap:12px;padding:10px 0;border-bottom:1px solid var(--line)"><div><div class="task-title">${esc(t.title)}</div><div class="small">${esc(t.section)} · ${esc(ownersText(t))}</div></div><span class="badge ${x.cls}">${x.txt}</span></div>`}).join('')}
+function board(){let m={'Не начато':'col-new','В работе':'col-progress','Ждём':'col-wait','Готово':'col-done'};Object.values(m).forEach(id=>document.getElementById(id).innerHTML='');tasks.forEach(t=>{let x=di(t);document.getElementById(m[t.status]||'col-new').insertAdjacentHTML('beforeend',`<div class="task-card" onclick="openModal(${t.id})"><div class="task-title">${esc(t.title)}</div><div class="meta"><span class="badge ${x.cls}">${x.txt}</span><span class="badge">${esc(t.section)}</span></div><div class="small" style="margin-top:8px">${esc(ownersText(t))}</div></div>`)})}
+function renderAll(){filters();rows();kpis();board()}
+function openModal(id){
+  let t=tasks.find(x=>x.id===id);
+  modalTitle.textContent=t?'Редактировать задачу':'Новая задача';
+  editId.value=t?.id||'';
+  fTitle.value=t?.title||'';
+  fSection.value=t?.section||'';
+  fStatus.value=t?.status||'Не начато';
+  fDeadline.value=t?.deadline||'';
+  fPriority.value=t?.priority||'Обычный';
+  fNote.value=t?.note||'';
+  const selected=t?.owners||[];
+  document.querySelectorAll('#fOwners input[name="owners"]').forEach(cb=>cb.checked=selected.includes(cb.value));
+  taskDialog.showModal()
+}
+function saveTask(e){
+  e.preventDefault();
+  let id=Number(editId.value)||Date.now();
+  const owners=[...document.querySelectorAll('#fOwners input[name="owners"]:checked')].map(cb=>cb.value);
+  let o={id,title:fTitle.value.trim(),section:fSection.value.trim(),owners,status:fStatus.value,deadline:fDeadline.value,priority:fPriority.value,note:fNote.value.trim()},
+      i=tasks.findIndex(x=>x.id===id);
+  if(i>=0)tasks[i]=o;else tasks.push(o);
+  persist();taskDialog.close();renderAll()
+}
+function exportJSON(){let b=new Blob([JSON.stringify(tasks,null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='KRASNOV_marketing_tasks.json';a.click()}function resetSeed(){if(confirm('Вернуть исходный список задач?')){tasks=JSON.parse(JSON.stringify(seed)).map(normalizeTask);persist();renderAll()}}document.querySelectorAll('.nav button').forEach(b=>b.onclick=()=>{document.querySelectorAll('.nav button').forEach(x=>x.classList.remove('active'));b.classList.add('active');document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));document.getElementById(b.dataset.tab).classList.add('active')});renderAll();
+</script></body></html>
