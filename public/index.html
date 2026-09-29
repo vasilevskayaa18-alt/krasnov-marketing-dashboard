@@ -171,7 +171,17 @@ function ownersText(t){return(t.owners&&t.owners.length?t.owners:['—']).join('
 function pClass(p){return p==='Критичный'?'pr-critical':p==='Высокий'?'pr-high':''}
 function setSync(ok,text){$('sync').className='sync '+(ok?'ok':'bad');$('sync').textContent=text}
 async function api(url,opt={}){opt.headers={...(opt.headers||{}),'X-Actor':actor()};if(opt.body)opt.headers['Content-Type']='application/json';let r=await fetch(url,opt);if(!r.ok)throw new Error(await r.text());return r.status===204?null:r.json()}
-async function loadTasks(){try{tasks=await api('/api/tasks');setSync(true,'Синхронизировано');renderAll()}catch(e){setSync(false,'Нет связи с базой')}}
+async function loadTasks(){
+  try{
+    const loaded=await api('/api/tasks');
+    tasks=Array.isArray(loaded)?loaded:[];
+    setSync(true,'Синхронизировано · '+tasks.length+' задач');
+    renderAll();
+  }catch(e){
+    console.error('TASK LOAD ERROR',e);
+    setSync(false,'Ошибка загрузки задач');
+  }
+}
 async function loadHistory(){try{history=await api('/api/history?limit=200');renderHistory()}catch(e){$('historyList').innerHTML='<div class="empty">Историю пока не удалось загрузить.</div>'}}
 async function loadAll(){await Promise.all([loadTasks(),loadHistory()])}
 function recurring(){return tasks.filter(t=>t.is_recurring)}
@@ -189,7 +199,21 @@ function moveMonth(n){calDate=new Date(calDate.getFullYear(),calDate.getMonth()+
 function renderCalendar(){let y=calDate.getFullYear(),m=calDate.getMonth(),first=new Date(y,m,1),start=(first.getDay()+6)%7,days=new Date(y,m+1,0).getDate(),prevDays=new Date(y,m,0).getDate();$('monthTitle').textContent=first.toLocaleDateString('ru-RU',{month:'long',year:'numeric'});let html=['Пн','Вт','Ср','Чт','Пт','Сб','Вс'].map(x=>'<div class="weekday">'+x+'</div>').join('');for(let i=0;i<42;i++){let day,mm=m,yy=y,muted=false;if(i<start){day=prevDays-start+i+1;mm=m-1;muted=true}else if(i>=start+days){day=i-start-days+1;mm=m+1;muted=true}else day=i-start+1;let dt=new Date(yy,mm,day),key=dt.getFullYear()+'-'+String(dt.getMonth()+1).padStart(2,'0')+'-'+String(dt.getDate()).padStart(2,'0'),isToday=key===new Date().toISOString().slice(0,10);let dayTasks=normalTasks().filter(t=>t.deadline===key);html+='<div class="day '+(muted?'muted ':'')+(isToday?'today':'')+'"><div class="day-num">'+day+'</div>'+dayTasks.map(t=>'<div class="cal-task '+(isOver(t)?'overdue ':'')+(isDone(t)?'done':'')+'" onclick="openModal('+t.id+')">'+esc(t.title)+'</div>').join('')+'</div>'}$('calendarGrid').innerHTML=html}
 function fmtVal(v){if(Array.isArray(v))return v.join(', ');if(typeof v==='boolean')return v?'Да':'Нет';return String(v??'—')}
 function renderHistory(){if(!history.length){$('historyList').innerHTML='<div class="empty">История пока пуста. Новые изменения будут записываться автоматически.</div>';return}$('historyList').innerHTML=history.map(h=>{let action=h.action==='created'?'создал(а)':h.action==='deleted'?'удалил(а)':'изменил(а)',changes=h.changes||{},rows=Object.values(changes).map(c=>'<div class="change-row"><b>'+esc(c.label)+':</b> '+esc(fmtVal(c.from))+' → '+esc(fmtVal(c.to))+'</div>').join('');return '<div class="history-item"><div class="history-top"><div><b>'+esc(h.actor)+'</b> '+action+' <b>'+esc(h.task_title)+'</b></div><div class="small">'+new Date(h.changed_at).toLocaleString('ru-RU')+'</div></div><div class="changes">'+(rows||'<div class="change-row">Запись создана.</div>')+'</div></div>'}).join('')}
-function renderAll(){filters();renderRows();renderKPIs();attention();renderOverdue();renderBoard();renderProcesses();renderCalendar()}
+function renderAll(){
+  const blocks=[
+    ['filters',filters],
+    ['rows',renderRows],
+    ['kpis',renderKPIs],
+    ['attention',attention],
+    ['overdue',renderOverdue],
+    ['board',renderBoard],
+    ['processes',renderProcesses],
+    ['calendar',renderCalendar]
+  ];
+  for(const [name,fn] of blocks){
+    try{fn()}catch(e){console.error('RENDER ERROR '+name,e)}
+  }
+}
 function openModal(id,forceRecurring=false){let t=tasks.find(x=>String(x.id)===String(id));$('modalTitle').textContent=t?'Редактировать задачу':forceRecurring?'Новый постоянный процесс':'Новая задача';$('editId').value=t?.id||'';$('fTitle').value=t?.title||'';$('fSection').value=t?.section||'';$('fStatus').value=(t?.status==='Не начато'?'Запланировано':t?.status)||'Запланировано';$('fDeadline').value=t?.deadline||'';$('fPriority').value=t?.priority||'Обычный';$('fNote').value=t?.note||'';$('fRecurring').checked=t?.is_recurring||forceRecurring;let selected=t?.owners||[];document.querySelectorAll('#fOwners input').forEach(cb=>cb.checked=selected.includes(cb.value));$('deleteBtn').style.display=t?'inline-block':'none';$('taskDialog').showModal()}
 async function saveTask(e){e.preventDefault();let id=$('editId').value,body={title:$('fTitle').value.trim(),section:$('fSection').value.trim(),owners:[...document.querySelectorAll('#fOwners input:checked')].map(x=>x.value),status:$('fStatus').value,deadline:$('fRecurring').checked?'':$('fDeadline').value,priority:$('fPriority').value,note:$('fNote').value.trim(),is_recurring:$('fRecurring').checked};$('taskDialog').close();setSync(true,'Сохранение…');try{await api(id?'/api/tasks/'+id:'/api/tasks',{method:id?'PUT':'POST',body:JSON.stringify(body)});await loadAll()}catch(e){setSync(false,'Ошибка сохранения');alert('Не удалось сохранить задачу')}}
 async function deleteCurrent(){let id=$('editId').value;if(!id)return;let t=tasks.find(x=>String(x.id)===String(id));if(!confirm('Удалить задачу «'+(t?.title||'')+'»?'))return;try{await api('/api/tasks/'+id,{method:'DELETE'});$('taskDialog').close();await loadAll()}catch(e){alert('Не удалось удалить задачу')}}
