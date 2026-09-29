@@ -31,7 +31,10 @@ const seedTasks = [
   {id:16,section:"Персонализированные сторис",title:"Адаптировать формат для KRASNOV: запрос клиента + образ жизни + состав семьи → решения проекта → переход к подробностям.",owners:["Надежда","Команда Маркетинга"],status:"Запланировано",deadline:null,priority:"Высокий",note:"После примеров из ВВ.",is_recurring:false}
 ];
 
-const actorOf = req => String(req.get("X-Actor") || "Не указано").slice(0,120);
+const actorOf = req => {
+  const raw = String(req.get("X-Actor") || "Не указано").slice(0,120);
+  return ({Nastya:"Настя",Nadezhda:"Надежда",Igor:"Игорь",Marketing:"Команда Маркетинга",YouTube:"Ютуберы"})[raw] || raw;
+};
 
 function normalizeTaskRow(r) {
   return {
@@ -95,6 +98,7 @@ async function initDb() {
   `);
   await pool.query("ALTER TABLE marketing_tasks ADD COLUMN IF NOT EXISTS is_recurring BOOLEAN NOT NULL DEFAULT FALSE");
   await pool.query("UPDATE marketing_tasks SET status='Запланировано' WHERE status='Не начато'");
+  await pool.query("UPDATE marketing_tasks SET status='В работе' WHERE status='На проверке'");
   await pool.query(`
     UPDATE marketing_tasks
     SET is_recurring=TRUE
