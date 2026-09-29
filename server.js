@@ -145,11 +145,28 @@ app.get("/health", async (_req,res) => {
 app.get("/api/tasks", async (_req,res) => {
   if (!process.env.DATABASE_URL) return res.status(503).json({error:"database_not_configured"});
   try {
-    const { rows } = await pool.query("SELECT id,section,title,owners,status,deadline,priority,note,is_recurring,created_at,updated_at FROM marketing_tasks ORDER BY id");
-    res.json(rows.map(normalizeTaskRow));
+    const { rows } = await pool.query(`
+      SELECT
+        id::text AS id,
+        section,
+        title,
+        owners,
+        status,
+        COALESCE(TO_CHAR(deadline,'YYYY-MM-DD'),'') AS deadline,
+        priority,
+        note,
+        is_recurring,
+        created_at::text AS created_at,
+        updated_at::text AS updated_at
+      FROM marketing_tasks
+      ORDER BY id
+    `);
+    console.log("GET /api/tasks ->", rows.length, "rows");
+    res.set("Cache-Control","no-store");
+    res.json(rows);
   } catch (e) {
-    console.error(e);
-    res.status(500).json({error:"database_error"});
+    console.error("GET /api/tasks ERROR", e);
+    res.status(500).json({error:"database_error",message:e.message});
   }
 });
 
